@@ -1,0 +1,21 @@
+
+. ./maven
+
+proxy(){
+    local op
+    if [ $# -eq 0 ]; then
+        op=help
+    else
+        case "$op" in
+            -h|--help)      op=help ;;
+            -v|--version)   op=version ;;
+        esac
+        op="$1"; shift
+    fi
+
+    case "$op" in
+        maven)                      proxy_maven "${1:+"$@"}" ;;
+        version)                    ;;
+        url)                        proxy_maven_url ${1:+"$@"} ;;
+    esac
+}
