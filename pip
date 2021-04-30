@@ -16,6 +16,7 @@ pipproxy_url(){
         op=aliyun
     fi
 
+    # TODO: use x-bash/mirror to replace.
     case "$op" in
         qinghua|qh|tsinghua|tuna)   printf "https://pypi.tuna.tsinghua.edu.cn/simple" ;;
         ustc)                       printf "https://pypi.mirrors.ustc.edu.cn/simple/" ;;

@@ -2,24 +2,33 @@
 
 # TODO: get ubuntu versio
 
-setup.apt.src(){
+proxy_apt_ubuntu_generate(){
+    local url="${1:?url}"
+    cat <<A
+deb $url/ubuntu/ bionic main restricted universe multiverse
+deb $url/ubuntu/ bionic-security main restricted universe multiverse
+deb $url/ubuntu/ bionic-updates main restricted universe multiverse
+deb $url/ubuntu/ bionic-proposed main restricted universe multiverse
+deb $url/ubuntu/ bionic-backports main restricted universe multiverse
+deb-src $url/ubuntu/ bionic main restricted universe multiverse
+deb-src $url/ubuntu/ bionic-security main restricted universe multiverse
+deb-src $url/ubuntu/ bionic-updates main restricted universe multiverse
+deb-src $url/ubuntu/ bionic-proposed main restricted universe multiverse
+deb-src $url/ubuntu/ bionic-backports main restricted universe multiverse
+A
 
+}
+
+
+setup.apt.src(){
     # TODO: Add whether backup
     
     local s=${1:-ali}
     s="$(echo "$s" | tr "[:upper:]" "[:lower:]")"
     local CONTENT=""
     case "$s" in
-        ali) CONTENT='deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
-deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
-deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
-deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
-deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse';;
+        ali) CONTENT=$(proxy_apt_ubuntu_generate "https://mirrors.aliyun.com/")
+            ;;
     esac
 
     local SRC_FP BAK_FP

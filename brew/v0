@@ -1,3 +1,41 @@
 brew(){
-    
+    :
+}
+
+brew_set(){
+    local url="${1:-https://mirrors.ustc.edu.cn}"
+
+    git -C "$(brew --repo)" remote set-url origin "$url/brew.git"
+    git -C "$(brew --repo homebrew/core)" remote set-url origin "$url/homebrew-core.git"
+    git -C "$(brew --repo homebrew/cask)" remote set-url origin "$url/homebrew-cask.git"
+
+    s="export \"HOMEBREW_BOTTLE_DOMAIN=$url/homebrew-bottles\""
+    eval "$s"
+
+    local i
+    for i in ~/.zshrc ~/.bash_profile ~/.kshrc; do
+        if ! grep "$s" "$i"; then
+            echo "$s" >> "$i"
+        fi
+    done
+
+    brew update
+}
+
+brew_unset(){
+    local url="${1:-https://github.com/Homebrew}"
+
+    git -C "$(brew --repo)" remote set-url origin "$url/brew.git"
+    git -C "$(brew --repo homebrew/core)" remote set-url origin "$url/homebrew-core.git"
+    git -C "$(brew --repo homebrew/cask)" remote set-url origin "$url/homebrew-cask"
+
+    unset HOMEBREW_BOTTLE_DOMAIN
+
+    local i
+    for i in ~/.zshrc ~/.bash_profile ~/.kshrc; do
+        s="$(grep -v HOMEBREW_BOTTLE_DOMAIN= "$i")"
+        echo "$s"> "$i"
+    done
+
+    brew update
 }

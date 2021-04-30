@@ -13,8 +13,11 @@ proxy(){
         op="$1"; shift
     fi
 
+    # Auto loading from folder
     case "$op" in
-        maven)                      proxy_maven "${1:+"$@"}" ;;
+        maven)                      proxy_maven ${1:+"$@"} ;;
+        brew)                       brew ${1:+"$@"} ;;
+        pip)                        pip ${1:+"$@"} ;;
         version)                    ;;
         url)                        proxy_maven_url ${1:+"$@"} ;;
     esac
