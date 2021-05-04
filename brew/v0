@@ -1,9 +1,56 @@
-brew(){
-    :
+proxy_brew(){
+    if ! brew --version >/dev/null; then
+        printf "Brew Not works."
+        return 1
+    else
+        proxy_brew(){
+            proxy_brew_subcmd ${1:+"$@"}
+        }
+        proxy_brew ${1:+"$@"}
+    fi
 }
 
-brew_set(){
+xrc subcmd
+
+subcmd proxy_brew "
+Subcommand:
+    :url        Provide url of mirror candidates
+    :set        Setting the mirror
+    :unset      Reset the source to the original official
+"
+
+# TODO: auto generate
+proxy_brew_url(){
+    local op="${1:-https://mirrors.ustc.edu.cn}"
+    case "$op" in
+        tuna|tsinghua|qh)       printf https://mirrors.tuna.tsinghua.edu.cn/git/ ;;
+        aliyun|ali)             printf https://mirrors.aliyun.com/ ;;
+        ustc)                   printf https://mirrors.ustc.edu.cn ;;
+        advise-json)            cat <<A
+{
+    ":tuna:tsinghua:qh:": {},
+    ":aliyun:ali:": {},
+    ":ustc:": {},
+    ":https://:"
+}
+A
+        ;;
+        *)                      printf "%s" "$op"
+    esac
+}
+
+proxy_brew_set(){
+    local op="${1:-https://mirrors.ustc.edu.cn}"
+    case "$op" in
+        advise-json)            proxy_brew_url advise-json ;;
+        *)                      proxy_brew_set_url  "$(proxy_brew_url "$op")" ;;
+    esac
+}
+
+
+proxy_brew_set_url(){
     local url="${1:-https://mirrors.ustc.edu.cn}"
+    printf "Setting proxy_brew mirror:\n    %s" "$url" >&2
 
     git -C "$(brew --repo)" remote set-url origin "$url/brew.git"
     git -C "$(brew --repo homebrew/core)" remote set-url origin "$url/homebrew-core.git"
@@ -22,7 +69,7 @@ brew_set(){
     brew update
 }
 
-brew_unset(){
+proxy_brew_unset(){
     local url="${1:-https://github.com/Homebrew}"
 
     git -C "$(brew --repo)" remote set-url origin "$url/brew.git"

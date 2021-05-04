@@ -1,24 +1,58 @@
+# shellcheck shell=sh
 
-. ./maven
+xrc subcmd
+xrc param
 
 proxy(){
-    local op
-    if [ $# -eq 0 ]; then
-        op=help
-    else
-        case "$op" in
-            -h|--help)      op=help ;;
-            -v|--version)   op=version ;;
-        esac
-        op="$1"; shift
+
+    param <<A
+--help      -h      =FLAG
+--version   -v      =FLAG
+A
+
+    if [ "$help" ]; then
+        proxy_subcmd help
+        return
     fi
 
-    # Auto loading from folder
-    case "$op" in
-        maven)                      proxy_maven ${1:+"$@"} ;;
-        brew)                       brew ${1:+"$@"} ;;
-        pip)                        pip ${1:+"$@"} ;;
-        version)                    ;;
-        url)                        proxy_maven_url ${1:+"$@"} ;;
-    esac
+    if [ "$version" ]; then
+        proxy_subcmd version
+        return
+    fi
+
+    proxy_subcmd ${1:+"$@"}
 }
+
+proxy_version(){
+    printf "%s" v0
+}
+
+subcmd proxy "
+Subcommand:
+    :brew|homebrew          Setting the brew mirros
+    :pip|python|py          Setting the pip mirrors
+    :npm|nodejs|node        Setting the npm mirrors
+    :yum                    Setting the yum mirrors
+    :maven|java             Setting the maven mirrors
+    :sdkman|sdk             Setting the sdkman mirrors
+    :version|v              Print out the command version
+    :go                     Setting the go mirrorss
+
+"
+
+eval "$(
+    for i in brew npm pip yum maven sdkman go; do
+        cat <<A
+
+proxy_$i(){
+    if xrc proxy/$i/v0; then
+        proxy_$i \${1:+"\$@"}
+    else
+        echo "Autoloading failure." >&2
+        return 1
+    fi
+}
+A
+    done
+)"
+

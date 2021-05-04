@@ -7,6 +7,37 @@
 # proxy gem auto ...
 # proxy auto
 
+xrc subcmd
+
+pipproxy(){
+    # local op
+    # if [ $# -eq 0 ]; then
+    #     op=help
+    # else
+    #     case "$1" in
+    #         -h|--help)      op=help ;;
+    #         -v|--version)   op=version ;;
+    #     esac
+    #     op="$1"; shift
+    # fi
+
+    # case "$op" in
+    #     set)        pipproxy_set ${1:+"$@"}
+
+    # esac
+
+    pipproxy_subcmd ${1:+"$@"}
+}
+
+
+subcmd pipproxy "
+Subcommand:
+    :url        Provide url of mirror candidates
+    :set        Setting the mirror
+    :unset      Reset the source to the original official
+"
+
+
 pipproxy_url(){
 
     local op
@@ -31,23 +62,7 @@ pipproxy_url(){
     esac
 }
 
-pipproxy(){
-    local op
-    if [ $# -eq 0 ]; then
-        op=help
-    else
-        case "$1" in
-            -h|--help)      op=help ;;
-            -v|--version)   op=version ;;
-        esac
-        op="$1"; shift
-    fi
 
-    case "$op" in
-        set)        pipproxy_set ${1:+"$@"}
-
-    esac
-}
 
 pipproxy_set(){
     local op=${1:-tuna}
