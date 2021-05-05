@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=sh disable=SC3043
 
 xrc subcmd
 xrc param
@@ -37,6 +37,8 @@ Subcommand:
     :sdkman|sdk             Setting the sdkman mirrors
     :version|v              Print out the command version
     :go                     Setting the go mirrorss
+    :set                    Setting the proxy in the shell environment
+    :unset|reset            Reset the proxy in the shell environment
 
 "
 
@@ -55,4 +57,38 @@ proxy_$i(){
 A
     done
 )"
+
+proxy_set(){
+    local proxy="${1:?
+        Provide proxy address like 
+            'https://<address>[:<port>]' or 
+            'http://<address>[:<port>]' or 
+            'socks5://<address>[:<port>]'
+        }"
+
+    case $proxy in
+        https://|http://|socks*://)     ;;
+        *)          
+            printf "%s" "Considered as http://$proxy"
+            ;;
+    esac
+
+    export http_proxy="$proxy"
+    export HTTP_PROXY="$proxy"
+    export https_proxy="$proxy"
+    export HTTPS_PROXY="$proxy"
+    export ftp_proxy="$proxy"
+    export FTP_PROXY="$proxy"
+    export ALL_PROXY="$proxy"
+}
+
+proxy_unset(){
+    export http_proxy=
+    export HTTP_PROXY=
+    export https_proxy=
+    export HTTPS_PROXY=
+    export ftp_proxy=
+    export FTP_PROXY=
+    export ALL_PROXY=
+}
 
