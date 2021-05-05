@@ -1,6 +1,6 @@
+# shellcheck shell=sh disable=SC3043
 
-
-goproxy(){
+proxy_go(){
     local op
     if [ $# -eq 0 ]; then
         op=help
@@ -15,25 +15,38 @@ goproxy(){
     case "$op" in
         help)                       ;;
         version)                    ;;
-        auto|autoset)               goproxy_auto ${1:+"$@"} ;;
-        sum|sumdb|gosumdb|gosum)    goproxy_gosumdb ${1:+"$@"} ;;
-        set)                        goproxy_set ${1:+"$@"} ;;
-        unset)                      goproxy_unset ${1:+"$@"} ;;
-        service)                    goproxy_service ${1:+"$@"} ;;
-        tutorial)                   goproxy_tutorial ${1:+"$@"} ;;
+        auto|autoset)               proxy_go_auto ${1:+"$@"} ;;
+        sum|sumdb|gosumdb|gosum)    proxy_go_gosumdb ${1:+"$@"} ;;
+        set)                        proxy_go_set ${1:+"$@"} ;;
+        unset)                      proxy_go_unset ${1:+"$@"} ;;
+        service)                    proxy_go_service ${1:+"$@"} ;;
+        tutorial)                   proxy_go_tutorial ${1:+"$@"} ;;
     esac
 }
 
-goproxy_auto(){
+
+subcmd "
+Subcommands:
+    :auto|autoset                       Set the goproxy and gosumdb to recommended mirror
+    :reset|reset                        Reet the download mirror
+    :gosumdb|sumdb|sum|gosum <mirror>   operations for gosumdb
+    :set                                Set the download mirror
+    :service                            Provide mirror service in docker or native binary
+    :help                               Show help
+    :tutorial|xman                      Tutorial for setting goproxy                           
+    :version                            Show version
+"
+
+proxy_go_auto(){
     if dig sh.x-cmd.com 2>/dev/null | grep gitee 2>/dev/null 1>dev/null; then
-        goproxy set aliyun
-        goproxy sum set qiniu
+        proxy_go set aliyun
+        proxy_go sum set qiniu
     else
         : Why ?
     fi
 }
 
-_goproxy_set(){
+_proxy_go_set(){
     local url="${1:?URL}"
     local code
 
@@ -43,7 +56,7 @@ _goproxy_set(){
         1.15*);;
         *) 
             code="
-    export GOPROXY="$url"
+    export GOPROXY=$url
     export GO111MODULE=on
 "
             eval "$code"
@@ -60,16 +73,16 @@ _goproxy_set(){
     printf "%s\n%s" "Seting the GORPOXY and GO111MODULE env with following code:" "$code" >&2
 }
 
-goproxy_set(){
+proxy_go_set(){
     case "$1" in
-        ali|aliyun)             _goproxy_set    https://mirrors.aliyun.com/goproxy/ ;;
-        goproxy|goproxy.cn)     _goproxy_set    https://goproxy.io/zh/ ;;
-        qiniu|io|goproxoy.io)   _goproxy_set    https://goproxy.cn ;;
+        ali|aliyun)             _proxy_go_set    https://mirrors.aliyun.com/goproxy/ ;;
+        goproxy|goproxy.cn)     _proxy_go_set    https://goproxy.io/zh/ ;;
+        qiniu|io|goproxy.io)   _proxy_go_set    https://goproxy.cn ;;
         *) ;;
     esac
 }
 
-goproxy_gosumdb(){
+proxy_go_gosumdb(){
     if [ $# -eq 0 ]; then
         echo "$GOSUMDB"
     fi
@@ -83,18 +96,19 @@ goproxy_gosumdb(){
     esac
 }
 
-goproxy_gosumdb_set(){
+proxy_go_gosumdb_set(){
     case "${1:gosum.io}" in
-        qiniu|io|goproxoy.io)   _goproxy_set    https://goproxy.cn ;;
+        qiniu|io|goproxoy.io)   _proxy_go_set    https://goproxy.cn ;;
         *)                      export GOSUMDB=gosum.io+ce6e7565+AY5qEHUk/qmHc5btzW45JVoENfazw8LielDsaI+lEbq6 ;;
     esac
 }
 
-goproxy_gosumdb_unset(){
+proxy_go_gosumdb_unset(){
     export GOSUMDB=
 }
 
-goproxy_unset(){
+# TODO: 
+proxy_go_unset(){
     local url="${1:?URL}"
 
     case $(go version | awk '{ print substr($3, 3) }') in
@@ -119,7 +133,7 @@ goproxy_unset(){
 }
 
 # help doc: https://goproxy.io/zh/docs/enterprise.html
-goproxy_service(){
+proxy_go_service(){
     if docker ps >/dev/null 2>&1; then
         docker run -d -p80:8081 goproxy/goproxy "$@"
     elif :; then
@@ -130,7 +144,7 @@ goproxy_service(){
     fi
 }
 
-goproxy_tutorial(){
+proxy_go_tutorial(){
     cat <<AAA
 Windows Powershell:
 
@@ -150,5 +164,4 @@ AAA
 
 }
 
-# xrc goproxy
 
