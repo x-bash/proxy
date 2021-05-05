@@ -32,9 +32,9 @@ Subcommands:
     :gosumdb|sumdb|sum|gosum <mirror>   operations for gosumdb
     :set                                Set the download mirror
     :service                            Provide mirror service in docker or native binary
-    :help                               Show help
-    :tutorial|xman                      Tutorial for setting goproxy                           
     :version                            Show version
+    :tutorial|xman                      Tutorial for setting goproxy                       
+    :help                               Show help
 "
 
 proxy_go_auto(){
@@ -42,7 +42,7 @@ proxy_go_auto(){
         proxy_go set aliyun
         proxy_go sum set qiniu
     else
-        : Why ?
+        : Why
     fi
 }
 
