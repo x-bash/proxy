@@ -40,7 +40,7 @@ proxy_exec(){
     # Consider loading everytime ?
     # Cache only for 12 hours
 
-    if xrc "proxy/$subcmd"; then
+    if xrc "proxy/_v0/$subcmd"; then
         eval "proxy_$subcmd" ${1:+"\$@"}
     else
         echo "Module not found. Autoloading failure." >&2
