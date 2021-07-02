@@ -3,7 +3,7 @@
 # author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
 # maintainer:   Li Junhao
 
-xrc param/v2
+xrc param/v1
 
 proxy(){
     param <<A
