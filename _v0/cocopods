@@ -1,3 +1,5 @@
+# shellcheck shell=sh disable=SC3043
+
 # This work is for swift developer
 
 # Reference: http://www.hikigaya.com/blog/185.html

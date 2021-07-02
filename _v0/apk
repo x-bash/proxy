@@ -1,3 +1,4 @@
+# shellcheck shell=sh disable=SC3043
 
 # For alpine users
 
