@@ -29,8 +29,8 @@ subcommand:
     official                "Official"
 A
     case "$PARAM_SUBCMD" in
-        aliyun|ali)             printf https://registry.npm.taobao.org             ;;
-        *)                      proxy_npm_url _param_help_doc >&2                 ;;
+        aliyun|ali)             printf https://registry.npm.taobao.org              ;;
+        *)                      proxy_npm_url _param_help_doc >&2                   ;;
     esac
 }
 
