@@ -1,7 +1,8 @@
 # shellcheck shell=sh disable=SC3043
 
-proxy_brew(){
+xrc param/v1
 
+proxy_brew(){
     param <<A
 Subcommand:
     url        Provide url of mirror candidates
@@ -13,13 +14,13 @@ A
     if ! command -v brew >/dev/null; then
         printf "Brew Not works."
         return 1
-    else
-        proxy_brew(){
-            proxy_brew_subcmd ${1:+"$@"}
-        }
+    elif [ -n "$subcmd" ]; then
         # shellcheck shell=sh disable=SC2154
         "proxy_brew_${subcmd}" ${1:+"$@"}
+    else
+        proxy_brew _param_help_doc
     fi
+
 }
 
 proxy_brew_url(){
@@ -36,14 +37,19 @@ A
     esac
 }
 
+#     param <<A
+# options:
+#     #1                      "Other URLs"
+# subcmd:
+#     tuna|tsinghua|qh        "Qinghua"
+#     aliyun|ali              "Ali"
+#     ustc                    "UTSC"
+# A
+
 proxy_brew_set_url(){
     param <<A
 options:
-    #1                      "Other URLs"
-subcmd:
-    tuna|tsinghua|qh        "Qinghua"
-    aliyun|ali              "Ali"
-    ustc                    "UTSC"
+    #1          "Candidates: tuna/tsinghua/qh, aliyun/ali, ustc, or self-defined url."    =   tuna tsinghua qh aliyun ali ustc
 A
 
     local url
