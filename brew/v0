@@ -19,19 +19,18 @@ Subcommand:
     :unset      Reset the source to the original official
 "
 
-# TODO: auto generate
 proxy_brew_url(){
     local op="${1:-https://mirrors.ustc.edu.cn}"
     case "$op" in
         tuna|tsinghua|qh)       printf https://mirrors.tuna.tsinghua.edu.cn/git/ ;;
         aliyun|ali)             printf https://mirrors.aliyun.com/ ;;
         ustc)                   printf https://mirrors.ustc.edu.cn ;;
-        advise-json)            cat <<A
+        _x_cmd_advise_json)     cat <<A
 {
-    ":tuna:tsinghua:qh:": {},
-    ":aliyun:ali:": {},
-    ":ustc:": {},
-    ":https://:"
+    "tuna|tsinghua|qh|": {},
+    "aliyun|ali": {},
+    "ustc": {},
+    "https://": {}
 }
 A
         ;;

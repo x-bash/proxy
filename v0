@@ -1,62 +1,49 @@
 # shellcheck shell=sh disable=SC3043
 
-xrc subcmd
-xrc param
+xrc param/v2
 
 proxy(){
-
     param <<A
---help      -h      =FLAG
---version   -v      =FLAG
+subcmd:
+    set                     "set proxy in local environments: http_proxy, https_proxy"
+    unset                   "unset all proxy"
+    version                 "provide version"
+
+    brew|homebrew           "Setting the brew mirros"
+    pip|python|py           "Setting the pip mirrors"
+    npm|nodejs|node         "Setting the npm mirrors"
+    yum                     "Setting the yum mirrors"
+    maven|java              "Setting the maven mirrors"
+    sdkman|sdk              "Setting the sdkman mirrors"
+    version|v               "Print out the command version"
+    go                      "Setting the go mirrorss"
+    set                     "Setting the proxy in the shell environment"
+    unset|reset             "Reset the proxy in the shell environment"
 A
 
-    if [ "$help" ]; then
-        proxy_subcmd help
-        return
+    if [ -n "$subcmd" ]; then
+        proxy_exec "${subcmd}" ${1:+"\$@"}
+    else
+        proxy help
     fi
-
-    if [ "$version" ]; then
-        proxy_subcmd version
-        return
-    fi
-
-    proxy_subcmd ${1:+"$@"}
 }
 
 proxy_version(){
     printf "%s" v0
 }
 
-subcmd proxy "
-Subcommand:
-    :brew|homebrew          Setting the brew mirros
-    :pip|python|py          Setting the pip mirrors
-    :npm|nodejs|node        Setting the npm mirrors
-    :yum                    Setting the yum mirrors
-    :maven|java             Setting the maven mirrors
-    :sdkman|sdk             Setting the sdkman mirrors
-    :version|v              Print out the command version
-    :go                     Setting the go mirrorss
-    :set                    Setting the proxy in the shell environment
-    :unset|reset            Reset the proxy in the shell environment
+proxy_exec(){
+    local subcmd="${1:?Subcmd}"
+    # Consider loading everytime ?
+    # Cache only for 12 hours
 
-"
-
-eval "$(
-    for i in brew npm pip yum maven sdkman go; do
-        cat <<A
-
-proxy_$i(){
-    if xrc proxy/$i/v0; then
-        proxy_$i \${1:+"\$@"}
+    if xrc "proxy/$subcmd"; then
+        eval "proxy_$subcmd" ${1:+"\$@"}
     else
-        echo "Autoloading failure." >&2
+        echo "Module not found. Autoloading failure." >&2
         return 1
     fi
 }
-A
-    done
-)"
 
 proxy_set(){
     local proxy="${1:?

@@ -1,0 +1,9 @@
+gem(){
+    param <<A
+subcmd:
+    
+
+
+A
+}
+
