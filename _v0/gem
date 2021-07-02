@@ -14,7 +14,7 @@ A
 
     # if ! brew --version >/dev/null; then
     if ! command -v npm >/dev/null; then
-        printf "Brew Not works."
+        printf "gem NOT exists."
         return 1
     elif [ -n "$PARAM_SUBCMD" ]; then
         "proxy_gem_${PARAM_SUBCMD}" ${1:+"$@"}

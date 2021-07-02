@@ -12,7 +12,7 @@ A
 
     # if ! brew --version >/dev/null; then
     if ! command -v brew >/dev/null; then
-        printf "Brew Not works."
+        printf "Brew NOT exists."
         return 1
     elif [ -n "$PARAM_SUBCMD" ]; then
         "proxy_brew_${PARAM_SUBCMD}" ${1:+"$@"}
