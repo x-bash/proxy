@@ -20,34 +20,32 @@ A
 }
 
 proxy_brew_url(){
-    local op="${1:-https://mirrors.ustc.edu.cn}"
+    param <<A
+options:
+    #1                      "Other URLs"
+subcmd:
+    tuna|tsinghua|qh        "Qinghua"
+    aliyun|ali              "Ali"
+    ustc                    "UTSC"
+A
+    local op="${1:-utsc}"
     case "$op" in
         tuna|tsinghua|qh)       printf https://mirrors.tuna.tsinghua.edu.cn/git/ ;;
         aliyun|ali)             printf https://mirrors.aliyun.com/ ;;
         ustc)                   printf https://mirrors.ustc.edu.cn ;;
-        _x_cmd_advise_json)     cat <<A
-{
-    "tuna|tsinghua|qh|": {},
-    "aliyun|ali": {},
-    "ustc": {},
-    "https://": {}
-}
-A
-        ;;
         *)                      printf "%s" "$op"
     esac
 }
 
-proxy_brew_set(){
-    local op="${1:-https://mirrors.ustc.edu.cn}"
-    case "$op" in
-        _x_cmd_advise_json)     proxy_brew_url      _x_cmd_advise_json ;;
-        *)                      proxy_brew_set_url  "$(proxy_brew_url "$op")" ;;
-    esac
-}
-
-
 proxy_brew_set_url(){
+    param <<A
+options:
+    #1                      "Other URLs"
+subcmd:
+    tuna|tsinghua|qh        "Qinghua"
+    aliyun|ali              "Ali"
+    ustc                    "UTSC"
+A
     local url="${1:-https://mirrors.ustc.edu.cn}"
     printf "Setting proxy_brew mirror:\n    %s" "$url" >&2
 
