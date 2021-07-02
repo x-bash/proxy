@@ -1,23 +1,23 @@
 proxy_brew(){
-    if ! brew --version >/dev/null; then
+
+    param <<A
+Subcommand:
+    url        Provide url of mirror candidates
+    set        Setting the mirror
+    unset      Reset the source to the original official
+A
+
+    # if ! brew --version >/dev/null; then
+    if ! command -v brew >/dev/null; then
         printf "Brew Not works."
         return 1
     else
         proxy_brew(){
             proxy_brew_subcmd ${1:+"$@"}
         }
-        proxy_brew ${1:+"$@"}
+        proxy_brew_${subcmd} ${1:+"$@"}
     fi
 }
-
-xrc subcmd
-
-subcmd proxy_brew "
-Subcommand:
-    :url        Provide url of mirror candidates
-    :set        Setting the mirror
-    :unset      Reset the source to the original official
-"
 
 proxy_brew_url(){
     local op="${1:-https://mirrors.ustc.edu.cn}"
@@ -41,7 +41,7 @@ A
 proxy_brew_set(){
     local op="${1:-https://mirrors.ustc.edu.cn}"
     case "$op" in
-        advise-json)            proxy_brew_url advise-json ;;
+        _x_cmd_advise_json)     proxy_brew_url      _x_cmd_advise_json ;;
         *)                      proxy_brew_set_url  "$(proxy_brew_url "$op")" ;;
     esac
 }
