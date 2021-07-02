@@ -19,3 +19,8 @@ ali，tencent，utsc，163等等
 ## git
 
 只能采用配置socks5代理
+
+## Future
+
+mirrors and operation seperating into two repos.
+The proxy data is update in real time.
