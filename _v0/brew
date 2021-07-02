@@ -1,3 +1,5 @@
+# shellcheck shell=sh disable=SC3043
+
 proxy_brew(){
 
     param <<A
@@ -15,18 +17,15 @@ A
         proxy_brew(){
             proxy_brew_subcmd ${1:+"$@"}
         }
-        proxy_brew_${subcmd} ${1:+"$@"}
+        # shellcheck shell=sh disable=SC2154
+        "proxy_brew_${subcmd}" ${1:+"$@"}
     fi
 }
 
 proxy_brew_url(){
     param <<A
 options:
-    #1                      "Other URLs"
-subcmd:
-    tuna|tsinghua|qh        "Qinghua"
-    aliyun|ali              "Ali"
-    ustc                    "UTSC"
+    #1          "Candidates: tuna/tsinghua/qh, aliyun/ali, ustc, or self-defined url."    =   tuna tsinghua qh aliyun ali ustc
 A
     local op="${1:-utsc}"
     case "$op" in
@@ -46,13 +45,16 @@ subcmd:
     aliyun|ali              "Ali"
     ustc                    "UTSC"
 A
-    local url="${1:-https://mirrors.ustc.edu.cn}"
+
+    local url
+    url="$(proxy_brew_url "$1")"
     printf "Setting proxy_brew mirror:\n    %s" "$url" >&2
 
     git -C "$(brew --repo)" remote set-url origin "$url/brew.git"
     git -C "$(brew --repo homebrew/core)" remote set-url origin "$url/homebrew-core.git"
     git -C "$(brew --repo homebrew/cask)" remote set-url origin "$url/homebrew-cask.git"
 
+    local s
     s="export \"HOMEBREW_BOTTLE_DOMAIN=$url/homebrew-bottles\""
     eval "$s"
 
@@ -71,14 +73,16 @@ proxy_brew_unset(){
 
     git -C "$(brew --repo)" remote set-url origin "$url/brew.git"
     git -C "$(brew --repo homebrew/core)" remote set-url origin "$url/homebrew-core.git"
-    git -C "$(brew --repo homebrew/cask)" remote set-url origin "$url/homebrew-cask"
+    git -C "$(brew --repo homebrew/cask)" remote set-url origin "$url/homebrew-cask.git"
 
     unset HOMEBREW_BOTTLE_DOMAIN
 
     local i
     for i in ~/.zshrc ~/.bash_profile ~/.kshrc; do
-        s="$(grep -v HOMEBREW_BOTTLE_DOMAIN= "$i")"
-        echo "$s"> "$i"
+        local s
+        if s="$(grep -v HOMEBREW_BOTTLE_DOMAIN= "$i")"; then
+            echo "$s"> "$i"
+        fi
     done
 
     brew update
