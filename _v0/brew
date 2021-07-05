@@ -1,5 +1,8 @@
 # shellcheck shell=sh disable=SC3043
 
+# Cannot works well because of this
+# https://e.gitee.com/lteam18/issues/list?is%5Bsearch%5D=proxy&issue=I3YXC0
+
 xrc param/v1
 
 proxy_brew(){
@@ -64,8 +67,6 @@ A
     local url
     url="$(proxy_brew_url "${PARAM_SUBCMD:-tencent}")"
     printf "Setting proxy_brew mirror:\n    %s" "$url" >&2
-
-    
 
     git -C "$(brew --repo)" remote set-url origin "$url/brew.git"
 
