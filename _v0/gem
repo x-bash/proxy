@@ -56,7 +56,7 @@ subcommand:
 A
     local url
     
-    if url="$(proxy_gem_url "${PARAM_SUBCMD:-aliyun}")"; then
+    if url="$(proxy_gem_url "${PARAM_SUBCMD:-ruby-china}")"; then
         printf "Setting proxy_gem mirror:\n    %s" "$url" >&2
         gem sources --add "$url" --remove https://rubygems.org/
     fi
