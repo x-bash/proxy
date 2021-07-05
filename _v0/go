@@ -1,49 +1,36 @@
 # shellcheck shell=sh disable=SC3043
 
-proxy_go(){
-    local op
-    if [ $# -eq 0 ]; then
-        op=help
-    else
-        case "$op" in
-            -h|--help)      op=help ;;
-            -v|--version)   op=version ;;
-        esac
-        op="$1"; shift
-    fi
+xrc param/v1
+xrc advise/v1
 
-    case "$op" in
-        help)                       ;;
-        version)                    ;;
-        auto|autoset)               proxy_go_auto ${1:+"$@"} ;;
-        sum|sumdb|gosumdb|gosum)    proxy_go_gosumdb ${1:+"$@"} ;;
-        set)                        proxy_go_set ${1:+"$@"} ;;
-        unset)                      proxy_go_unset ${1:+"$@"} ;;
-        service)                    proxy_go_service ${1:+"$@"} ;;
-        tutorial)                   proxy_go_tutorial ${1:+"$@"} ;;
-    esac
+proxy_go(){
+    param <<A
+subcommands:
+    auto|autoset                       Set the goproxy and gosumdb to recommended mirror
+    reset|reset                        Reet the download mirror
+    gosumdb|sumdb|sum|gosum            operations for gosumdb
+    set                                Set the download mirror
+    service                            Provide mirror service in docker or native binary
+    version                            Show version
+    tutorial|xman                      Tutorial for setting goproxy                       
+    help                               Show help
+A
+
+    "proxy_go_${PARAM_SUBCMD}" ${1:+"$@"}
 }
 
-
-subcmd "
-Subcommands:
-    :auto|autoset                       Set the goproxy and gosumdb to recommended mirror
-    :reset|reset                        Reet the download mirror
-    :gosumdb|sumdb|sum|gosum <mirror>   operations for gosumdb
-    :set                                Set the download mirror
-    :service                            Provide mirror service in docker or native binary
-    :version                            Show version
-    :tutorial|xman                      Tutorial for setting goproxy                       
-    :help                               Show help
-"
-
+# Using web to judge instead of dig command
+# net is-in-china
 proxy_go_auto(){
-    if dig sh.x-cmd.com 2>/dev/null | grep gitee 2>/dev/null 1>dev/null; then
-        proxy_go set aliyun
-        proxy_go sum set qiniu
-    else
-        : Why
-    fi
+    # if dig sh.x-cmd.com 2>/dev/null | grep gitee 2>/dev/null 1>dev/null; then
+    #     proxy_go set aliyun
+    #     proxy_go sum set qiniu
+    # else
+    #     : Why
+    # fi
+
+    proxy_go set aliyun
+    proxy_go gosumdb set qiniu
 }
 
 _proxy_go_set(){
@@ -74,30 +61,34 @@ _proxy_go_set(){
 }
 
 proxy_go_set(){
-    case "$1" in
-        ali|aliyun)             _proxy_go_set    https://mirrors.aliyun.com/goproxy/ ;;
-        goproxy|goproxy.cn)     _proxy_go_set    https://goproxy.io/zh/ ;;
+    param <<A
+subcommand:
+    aliyun|ali                  "Ali"
+    goproxy|goproxy.cn          "goproxy.cn"
+    qiniu|io|goproxy.io         "goproxy.io"
+    official                    "Official"
+A
+
+    case "${1:-aliyun}" in
+        ali|aliyun)            _proxy_go_set    https://mirrors.aliyun.com/goproxy/ ;;
+        goproxy|goproxy.cn)    _proxy_go_set    https://goproxy.io/zh/ ;;
         qiniu|io|goproxy.io)   _proxy_go_set    https://goproxy.cn ;;
         *) ;;
     esac
 }
 
 proxy_go_gosumdb(){
-    if [ $# -eq 0 ]; then
-        echo "$GOSUMDB"
-    fi
+    param <<A
+subcommands:
+    set                                Set the download mirror
+    unset|reset|clear                  Reset the download mirror
+A
 
-    local op="$1"; shift
-
-    case "$op" in
-        set)                    gosumdb_set "$@" ;;
-        unset|reset|clear)      gosumdb_unset "$@" ;;
-        *)                      gosumdb_set "$op" "$@" ;;
-    esac
+    "proxy_go_gosumdb_${PARAM_SUBCMD}" ${1:+"$@"}
 }
 
 proxy_go_gosumdb_set(){
-    case "${1:gosum.io}" in
+    case "${1:-qiniu}" in
         qiniu|io|goproxoy.io)   _proxy_go_set    https://goproxy.cn ;;
         *)                      export GOSUMDB=gosum.io+ce6e7565+AY5qEHUk/qmHc5btzW45JVoENfazw8LielDsaI+lEbq6 ;;
     esac
@@ -164,4 +155,8 @@ AAA
 
 }
 
+if [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
+    xrc advise/v0
+    advise proxy_go
+fi
 

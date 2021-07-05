@@ -82,3 +82,7 @@ proxy_unset(){
     export ALL_PROXY=
 }
 
+if [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
+    xrc advise/v0
+    advise dingtalk
+fi
