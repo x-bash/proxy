@@ -28,13 +28,11 @@ proxy_gem_url(){
     param <<A
 subcommand:
     ruby-china              "ruby china"
-    aliyun|ali              "Ali"
     official                "Official"
 A
     case "$PARAM_SUBCMD" in
         # https://gems.ruby-china.com
         ruby-china|cn)          printf https://gems.ruby-china.com                  ;;
-        aliyun|ali)             printf https://registry.npm.taobao.org              ;;
         official)               printf https://rubygems.org                         ;;
         *)                      proxy_gem_url _param_help_doc >&2                   ;;
     esac
@@ -54,7 +52,6 @@ proxy_gem_set() {
     param <<A
 subcommand:
     ruby-china              "ruby china"
-    aliyun|ali              "Ali"
     official                "Official"
 A
     local url
