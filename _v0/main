@@ -37,8 +37,7 @@ A
 }
 
 for i in brew pip npm go; do #  yum maven
-    # xrc "proxy/_v0/$i"
-    . ./_v0/$i
+    xrc "proxy/_v0/$i"
 
     # eval proxy_$i _x_cmd_advise_json
 done
