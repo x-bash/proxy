@@ -15,10 +15,10 @@ subcommands:
     version                 "provide version"
 
     brew|homebrew           "Setting the brew mirrors"
-    pip|python|py           "Setting the pip mirrors"
-    npm|nodejs|node         "Setting the npm mirrors"
+    pip                     "Setting the pip mirrors"
+    npm                     "Setting the npm mirrors"
     yum                     "Setting the yum mirrors"
-    maven|java              "Setting the maven mirrors"
+    maven                   "Setting the maven mirrors"
     sdkman|sdk              "Setting the sdkman mirrors"
     version|v               "Print out the command version"
     go                      "Setting the go mirrorss"
