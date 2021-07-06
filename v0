@@ -3,86 +3,12 @@
 # author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
 # maintainer:   Li Junhao
 
-xrc param/v1
-
 proxy(){
-    param <<A
-subcmd:
-    set                     "set proxy in local environments: http_proxy, https_proxy"
-    unset                   "unset all proxy"
-    version                 "provide version"
-
-    brew|homebrew           "Setting the brew mirros"
-    pip|python|py           "Setting the pip mirrors"
-    npm|nodejs|node         "Setting the npm mirrors"
-    yum                     "Setting the yum mirrors"
-    maven|java              "Setting the maven mirrors"
-    sdkman|sdk              "Setting the sdkman mirrors"
-    version|v               "Print out the command version"
-    go                      "Setting the go mirrorss"
-    set                     "Setting the proxy in the shell environment"
-    unset|reset             "Reset the proxy in the shell environment"
-A
-
-    if [ -n "$subcmd" ]; then
-        proxy_exec "${subcmd}" ${1:+"\$@"}
-    else
-        proxy help
-    fi
-}
-
-proxy_version(){
-    printf "%s" v0
-}
-
-proxy_exec(){
-    local subcmd="${1:?Subcmd}"
-    # Consider loading everytime ?
-    # Cache only for 12 hours
-
-    if xrc "proxy/_v0/$subcmd"; then
-        eval "proxy_$subcmd" ${1:+"\$@"}
-    else
-        echo "Module not found. Autoloading failure." >&2
-        return 1
-    fi
-}
-
-proxy_set(){
-    local proxy="${1:?
-        Provide proxy address like 
-            'https://<address>[:<port>]' or 
-            'http://<address>[:<port>]' or 
-            'socks5://<address>[:<port>]'
-        }"
-
-    case $proxy in
-        https://|http://|socks*://)     ;;
-        *)          
-            printf "%s" "Considered as http://$proxy"
-            ;;
-    esac
-
-    export http_proxy="$proxy"
-    export HTTP_PROXY="$proxy"
-    export https_proxy="$proxy"
-    export HTTPS_PROXY="$proxy"
-    export ftp_proxy="$proxy"
-    export FTP_PROXY="$proxy"
-    export ALL_PROXY="$proxy"
-}
-
-proxy_unset(){
-    export http_proxy=
-    export HTTP_PROXY=
-    export https_proxy=
-    export HTTPS_PROXY=
-    export ftp_proxy=
-    export FTP_PROXY=
-    export ALL_PROXY=
+    # bash $(xrc which proxy/_v0/main) ${1:+"$@"}
+    bash ./_v0/main ${1:+"$@"}
 }
 
 if [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
     xrc advise/v0
-    advise dingtalk
+    advise proxy
 fi

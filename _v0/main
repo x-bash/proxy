@@ -1,0 +1,97 @@
+# shellcheck shell=sh disable=SC3043
+
+# author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
+# maintainer:   Li Junhao
+
+D="$HOME/.x-cmd/boot" eval '[ -f "$D" ] &&  . "$D"' || eval "$(curl https://get.x-cmd.com)"
+
+xrc param/v1
+
+proxy(){
+    param <<A
+subcommands:
+    set                     "set proxy in local environments: http_proxy, https_proxy"
+    unset                   "unset all proxy"
+    version                 "provide version"
+
+    brew|homebrew           "Setting the brew mirrors"
+    pip|python|py           "Setting the pip mirrors"
+    npm|nodejs|node         "Setting the npm mirrors"
+    yum                     "Setting the yum mirrors"
+    maven|java              "Setting the maven mirrors"
+    sdkman|sdk              "Setting the sdkman mirrors"
+    version|v               "Print out the command version"
+    go                      "Setting the go mirrorss"
+    set                     "Setting the proxy in the shell environment"
+    unset|reset             "Reset the proxy in the shell environment"
+A
+
+    if [ -n "$PARAM_SUBCMD" ]; then
+        # proxy_exec "${PARAM_SUBCMD}" ${1:+"\$@"}
+        # command -v "proxy_$PARAM_SUBCMD" || xrc "proxy/_v0/$subcmd"
+        # command -v "proxy_$PARAM_SUBCMD" || . "./_v0/$PARAM_SUBCMD"
+        "proxy_$PARAM_SUBCMD" ${1:+"$@"}
+    else
+        proxy help
+    fi
+}
+
+for i in brew pip npm go; do #  yum maven
+    # xrc "proxy/_v0/$i"
+    . ./_v0/$i
+
+    # eval proxy_$i _x_cmd_advise_json
+done
+
+proxy_version(){
+    printf "%s" v0
+}
+
+proxy_exec(){
+    local subcmd="${1:?Subcmd}"
+    # Consider loading everytime ?
+    # Cache only for 12 hours
+
+    if xrc "proxy/_v0/$subcmd"; then
+        eval "proxy_$subcmd" ${1:+"\$@"}
+    else
+        echo "Module not found. Autoloading failure." >&2
+        return 1
+    fi
+}
+
+proxy_set(){
+    local proxy="${1:?
+        Provide proxy address like 
+            'https://<address>[:<port>]' or 
+            'http://<address>[:<port>]' or 
+            'socks5://<address>[:<port>]'
+        }"
+
+    case $proxy in
+        https://|http://|socks*://)     ;;
+        *)          
+            printf "%s" "Considered as http://$proxy"
+            ;;
+    esac
+
+    export http_proxy="$proxy"
+    export HTTP_PROXY="$proxy"
+    export https_proxy="$proxy"
+    export HTTPS_PROXY="$proxy"
+    export ftp_proxy="$proxy"
+    export FTP_PROXY="$proxy"
+    export ALL_PROXY="$proxy"
+}
+
+proxy_unset(){
+    export http_proxy=
+    export HTTP_PROXY=
+    export https_proxy=
+    export HTTPS_PROXY=
+    export ftp_proxy=
+    export FTP_PROXY=
+    export ALL_PROXY=
+}
+
+[ $# -gt 0 ] && proxy ${1:+"$@"} 

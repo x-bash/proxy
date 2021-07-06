@@ -7,48 +7,31 @@
 # proxy gem auto ...
 # proxy auto
 
-xrc subcmd
+xrc param/v1
 
-pipproxy(){
-    # local op
-    # if [ $# -eq 0 ]; then
-    #     op=help
-    # else
-    #     case "$1" in
-    #         -h|--help)      op=help ;;
-    #         -v|--version)   op=version ;;
-    #     esac
-    #     op="$1"; shift
-    # fi
+proxy_pip(){
+    param <<A
+subcommands:
+    url        Provide url of mirror candidates
+    set        Setting the mirror
+    unset      Reset the source to the original official
+A
 
-    # case "$op" in
-    #     set)        pipproxy_set ${1:+"$@"}
-
-    # esac
-
-    pipproxy_subcmd ${1:+"$@"}
+    "proxy_pip_${PARAM_SUBCMD}" ${1:+"$@"}
 }
 
+proxy_pip_url(){
+    param <<A
+subcommands:
+    qinghua|qh|tsinghua|tuna        "Ali"
+    ustc                            "goproxy.cn"
+    aliyun                          "goproxy.io"
+    huazhong                        "Official"
+    douban                          "Official"
+    tencent|qq|weixin               "Official"
+A
 
-subcmd pipproxy "
-Subcommand:
-    :url        Provide url of mirror candidates
-    :set        Setting the mirror
-    :unset      Reset the source to the original official
-"
-
-
-pipproxy_url(){
-
-    local op
-    if [ -n "$1" ]; then
-        op=$1
-    else 
-        op=aliyun
-    fi
-
-    # TODO: use x-bash/mirror to replace.
-    case "$op" in
+    case "${PARAM_SUBCMD}" in
         qinghua|qh|tsinghua|tuna)   printf "https://pypi.tuna.tsinghua.edu.cn/simple" ;;
         ustc)                       printf "https://pypi.mirrors.ustc.edu.cn/simple/" ;;
         aliyun)                     printf "http://mirrors.aliyun.com/pypi/simple/" ;;
@@ -57,24 +40,31 @@ pipproxy_url(){
         douban)                     printf "http://pypi.douban.com/simple/" ;;
         tencent|qq|weixin)          printf "http://mirrors.cloud.tencent.com/pypi/simple" ;;
         # TODO: add self-defined new proxy
-        http://|https://)           printf "$op" ;;
+        # http://|https://)           printf "$op" ;;
         *)                          echo "Unrecognized source name"; return 1
     esac
 }
 
+proxy_pip_set(){
+    param <<A
+subcommands:
+    qinghua|qh|tsinghua|tuna        "Ali"
+    ustc                            "goproxy.cn"
+    aliyun                          "goproxy.io"
+    huazhong                        "Official"
+    douban                          "Official"
+    tencent|qq|weixin               "Official"
+A
 
-
-pipproxy_set(){
-    local op=${1:-tuna}
     local url
-    if url="$(pipproxy_url "$op")"; then
-        pipproxy_set_url "$url"
+    if url="$(proxy_pip_url "$PARAM_SUBCMD")"; then
+        proxy_pip_set_url "$url"
     else
         return 1
     fi
 }
 
-pipproxy_unset(){
+proxy_pip_unset(){
     cp "$HOME/.pip/pip.conf" "$HOME/.pip/pip.conf.bak"
         awk \
             -e index_url="$index_url" \
@@ -94,11 +84,11 @@ pipproxy_unset(){
 '>"$HOME/.pip/pip.conf"  <"$HOME/.pip/pip.conf.bak"
 }
 
-pipproxy_recover(){
+proxy_pip_recover(){
     : Use recent bak config file to replace current config file
 }
 
-pipproxy_set_url(){
+proxy_pip_set_url(){
     local index_url="${1:?index_url}"
     pip config set global.index-url "$index_url"
 
@@ -138,3 +128,8 @@ pipproxy_set_url(){
 
 }
 
+if [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
+    xrc advise/v0
+    echo "advise pip"
+    advise proxy_pip
+fi

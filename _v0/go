@@ -1,7 +1,6 @@
 # shellcheck shell=sh disable=SC3043
 
 xrc param/v1
-xrc advise/v1
 
 proxy_go(){
     param <<A
@@ -69,7 +68,7 @@ subcommand:
     official                    "Official"
 A
 
-    case "${1:-aliyun}" in
+    case "${PARAM_SUBCMD:-aliyun}" in
         ali|aliyun)            _proxy_go_set    https://mirrors.aliyun.com/goproxy/ ;;
         goproxy|goproxy.cn)    _proxy_go_set    https://goproxy.io/zh/ ;;
         qiniu|io|goproxy.io)   _proxy_go_set    https://goproxy.cn ;;
