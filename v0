@@ -4,8 +4,8 @@
 # maintainer:   Li Junhao
 
 proxy(){
-    # bash $(xrc which proxy/_v0/main) ${1:+"$@"}
-    bash ./_v0/main ${1:+"$@"}
+    bash "$(xrc which proxy/_v0/main)" ${1:+"$@"}
+    # bash ./_v0/main ${1:+"$@"}
 }
 
 if [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
