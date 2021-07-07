@@ -15,7 +15,10 @@ docker(){
             shift
             # inject a binary
             # Only ready if it is needed
-            _X_CMD_DOCKER_BIN run -v "/root/.x-cmd/x:/bin/x" -v "/root/.x-cmd/bin/x-cmd:/var/x-cmd/bin/x" ${2:+"$@"}
+            _X_CMD_DOCKER_BIN run \
+                -v "/root/.x-cmd/x:/bin/x" \
+                -v "/root/.x-cmd/bin/x-cmd:/var/x-cmd/bin/x" \
+                ${2:+"$@"}
             ;;
         xexec)
             # inject a binary less than 1mb !
@@ -24,9 +27,11 @@ docker(){
 
             name=$(
                 for arg in "$@"; do
-                    [ ! "${i#-}" = "$i" ] && continue
-                    if docker container list -q -f id="$i" 1>/dev/null || docker container list -q -f name="$i" 1>/dev/null ; then
-                        echo "$i"
+                    [ ! "${arg#-}" = "$arg" ] && continue
+                    if docker container list -q -f id="$arg" 1>/dev/null || \
+                        docker container list -q -f name="$arg" 1>/dev/null ; then
+
+                        echo "$arg"
                         break
                     fi
                 done
