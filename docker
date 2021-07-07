@@ -11,36 +11,36 @@ docker(){
     local op="${1}"
 
     case "$op" in
-    xrun|x)
-        shift
-        # inject a binary
-        # Only ready if it is needed
-        _X_CMD_DOCKER_BIN run -v "/root/.x-cmd/x:/bin/x" -v "/root/.x-cmd/bin/x-cmd:/var/x-cmd/bin/x" ${2:+"$@"}
-        ;;
-    xexec)
-        # inject a binary less than 1mb !
-        # inject a script less than 1
-        local name=""
+        xrun|x)
+            shift
+            # inject a binary
+            # Only ready if it is needed
+            _X_CMD_DOCKER_BIN run -v "/root/.x-cmd/x:/bin/x" -v "/root/.x-cmd/bin/x-cmd:/var/x-cmd/bin/x" ${2:+"$@"}
+            ;;
+        xexec)
+            # inject a binary less than 1mb !
+            # inject a script less than 1
+            local name=""
 
-        name=$(
-            for arg in "$@"; do
-                [ ! "${i#-}" = "$i" ] && continue
-                if docker container list -q -f id="$i" 1>/dev/null || docker container list -q -f name="$i" 1>/dev/null ; then
-                    echo "$i"
-                    break
-                fi
-            done
-        )
-        [ -z "$name" ] &&  return 1
+            name=$(
+                for arg in "$@"; do
+                    [ ! "${i#-}" = "$i" ] && continue
+                    if docker container list -q -f id="$i" 1>/dev/null || docker container list -q -f name="$i" 1>/dev/null ; then
+                        echo "$i"
+                        break
+                    fi
+                done
+            )
+            [ -z "$name" ] &&  return 1
 
-        _X_CMD_DOCKER_BIN xinit "$name"
-        # parse options. find the container
-        ;;
-    xinit)
-        local container="${1}"
-        _X_CMD_DOCKER_BIN cp    /root/.x-cmd/x             "$container:/bin/x"
-        _X_CMD_DOCKER_BIN cp    /root/.x-cmd/bin/x-cmd     "$container:/var/x-cmd/bin/x-cmd"
-        ;;
+            _X_CMD_DOCKER_BIN xinit "$name"
+            # parse options. find the container
+            ;;
+        xinit)
+            local container="${1}"
+            _X_CMD_DOCKER_BIN cp    /root/.x-cmd/x             "$container:/bin/x"
+            _X_CMD_DOCKER_BIN cp    /root/.x-cmd/bin/x-cmd     "$container:/var/x-cmd/bin/x-cmd"
+            ;;
     *)      
         _X_CMD_DOCKER_BIN  ${1:+"$@"} ;;
     esac
