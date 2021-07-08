@@ -131,6 +131,5 @@ proxy_pip_set_url(){
 
 if [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
     xrc advise/v0
-    echo "advise pip"
     advise proxy_pip
 fi
