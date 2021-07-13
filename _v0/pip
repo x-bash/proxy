@@ -32,13 +32,13 @@ subcommands:
 A
 
     case "${PARAM_SUBCMD}" in
-        qinghua|qh|tsinghua|tuna)   printf "https://pypi.tuna.tsinghua.edu.cn/simple" ;;
-        ustc)                       printf "https://pypi.mirrors.ustc.edu.cn/simple/" ;;
-        aliyun)                     printf "http://mirrors.aliyun.com/pypi/simple/" ;;
-        huazhong)                   printf "http://pypi.hustunique.com/" ;;
-        shandong)                   printf "http://pypi.sdutlinux.org/" ;;
-        douban)                     printf "http://pypi.douban.com/simple/" ;;
-        tencent|qq|weixin)          printf "http://mirrors.cloud.tencent.com/pypi/simple" ;;
+        qinghua|qh|tsinghua|tuna)   printf "https://pypi.tuna.tsinghua.edu.cn/simple"       ;;
+        ustc)                       printf "https://pypi.mirrors.ustc.edu.cn/simple/"       ;;
+        aliyun)                     printf "http://mirrors.aliyun.com/pypi/simple/"         ;;
+        huazhong)                   printf "http://pypi.hustunique.com/"                    ;;
+        shandong)                   printf "http://pypi.sdutlinux.org/"                     ;;
+        douban)                     printf "http://pypi.douban.com/simple/"                 ;;
+        tencent|qq|weixin)          printf "http://mirrors.cloud.tencent.com/pypi/simple"   ;;
         # TODO: add self-defined new proxy
         # http://|https://)           printf "$op" ;;
         *)                          echo "Unrecognized source name"; return 1
